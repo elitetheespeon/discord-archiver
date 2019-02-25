@@ -1,0 +1,8 @@
+<repeat group="{{ @role_info }}" value="{{ @r }}">
+<check if="{{ @r->color > 0 }}">
+.r{{ @r->id }} {
+    color: #{{ str_pad(dechex(@r->color), 6, "0") }};
+}
+
+</check>
+</repeat>

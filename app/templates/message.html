@@ -1,0 +1,59 @@
+                <div id="message{{ @m.id }}" class="message full-width wrapper-horizontal center">
+                    <div id="message-wrapper" class="full-width wrapper-vertical">
+                        <div id="message1-1" class="submessage full-width wrapper-horizontal">
+                            <div class="w1 left">
+                                <p class="timestamp">{{ date('g:i A',date('U', strtotime(@m.timestamp))) }}</p>
+                            </div>
+                            <div class="w8">
+                                <p>
+                                    <span class="username r{{ @m.role_color }}">{{ @m.author.username }}#{{ @m.author.discriminator }}</span>
+<check if="{{ @m.content }}">
+                                    <span class="content">{{ @m.content }}</span>
+</check>
+                                </p>
+
+<check if="{{ count(@m.attachments) > 0 }}">
+                                <div class="preview wrapper-vertical left" style="border-left: solid 3px #4f545c;">
+<repeat group="{{ @m.attachments }}" value="{{ @a }}">
+                                    <a href="#" target="_blank"><img class="preview-content" src="att/{{ @a.id }}.{{ @a.filename }}"></a>
+</repeat>
+                                </div>
+</check>
+
+<check if="{{ count(@m.embeds) > 0 }}">
+<repeat group="{{ @m.embeds }}" value="{{ @e }}">
+                                <div class="preview wrapper-vertical left" style="border-left: solid 3px #4f545c;">
+                                    <div class="wrapper-horizontal center">
+<check if="{{ @e.author }}">
+                                        <img class="preview-avatar" src="{{ @e.author.url }}">
+                                        <p>{{ @e.author.name }}</p>
+</check>
+                                    </div>
+                                    <p class="preview-gray"><check if="{{ @e.description }}">{{ @e.description }}</check></p>
+                                    <div class="full-width wrapper-horizontal center">
+<check if="{{ count(@e.fields) > 0 }}">
+<repeat group="{{ @e.fields }}" value="{{ @f }}">
+                                        <div class="w5">
+                                            <p>{{ @f.name }}</p>
+                                            <p class="preview-gray">{{ @f.value }}</p>
+                                        </div>
+</repeat>
+                                    </div>
+</check>
+<check if="{{ @e.thumbnail.proxy_url }}">
+                                    <a href="#" target="_blank"><img class="preview-content" src="{{ @e.thumbnail.proxy_url }}"></a>
+</check>
+<check if="{{ @e.footer.text }}">
+                                    <div class="wrapper-horizontal center">
+                                        <img class="preview-avatar" src="{{ @e.footer.icon_url }}">
+                                        <p class="preview-small preview-gray">{{ @e.footer.text }}</p>
+                                    </div>
+</check>
+                                </div>
+</repeat>
+</check>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="message-divider divider">

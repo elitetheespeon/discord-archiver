@@ -1,0 +1,10 @@
+[globals]
+;Debug level
+debug_level = false
+
+;Discord user token to send DMs
+discord_token = 0000000000000000000000000000000000000000000000000000000
+
+;Channels to archive
+channels.1 = 00000000000000000000
+channels.2 = 00000000000000000000

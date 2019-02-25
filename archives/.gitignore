@@ -1,0 +1,7 @@
+# Ignore everything at root
+*
+
+# These files should be tracked
+!.gitignore
+!att/
+!att/**
