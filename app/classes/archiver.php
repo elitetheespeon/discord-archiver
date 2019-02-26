@@ -14,9 +14,6 @@ class Archiver{
     
     //Define last message number
     var $last_msg;
-    
-    //Define loop
-    var $loop;
 
     //Define messages
     var $messages;
@@ -31,7 +28,6 @@ class Archiver{
         $this->discord = new RestCord\DiscordClient(['token' => $f3->get('discord_token'), 'logger' => $this->logger->log_err, 'throwOnRatelimit' => false]);
         $this->client = new GuzzleHttp\Client();
         $this->last_msg = false;
-        $this->loop = false;
         $this->messages = [];
         $this->users = [];
     }
@@ -106,7 +102,6 @@ class Archiver{
             if(date('Y-m',date('U', strtotime($message['timestamp']))) != date('Y-m',date('U', strtotime($last_msg['timestamp']))) && $last_msg['timestamp']){
                 //Last message month is different, kick off archive script to close out month
                 $this->archive_month();
-                exit();
             }
 
             //Get role color
@@ -130,9 +125,6 @@ class Archiver{
 
         //Wait 5 seconds
         sleep(5);
-        
-        //dump($this->messages);
-        //exit();
         
         //Get next set of messages
         $this->get_messages($channel, $last_msg);
