@@ -156,6 +156,9 @@ class Archiver{
                 $message['content'] = $this->replace_emoji($message['content'], $emojis);
             }
             
+            //Turn any URLs in content into clickable URLs that are shortened down
+            $message['content'] = $this->short_url($message['content']);
+            
             //Render message into HTML
             $this->render_message($message);
             
@@ -285,6 +288,12 @@ class Archiver{
         //Render header HTML
         $html = Template::instance()->render('header.html');
         
+        //Check message sort order
+        if($this->f3->get('message_sort') == 'ascending'){
+            //Reverse array so messages are ascending (default descending)
+            $this->messages = array_reverse($this->messages);
+        }
+        
         //Loop through messages stored (month)
         foreach($this->messages as $msgs_by_month){
             //Loop through messages stored (day)
@@ -356,6 +365,84 @@ class Archiver{
             //Download failed
             return false;
         }
+    }
+
+    //Turn any URLs in content into clickable URLs that are shortened down
+	public function short_url($text){
+		$urlRegex = "((?:https?|ftp)\:\/\/)"; /// Scheme
+		$urlRegex .= "([a-zA-Z0-9+!*(),;?&=\$_.-]+(\:[a-zA-Z0-9+!*(),;?&=\$_.-]+)?@)?"; /// User and Password
+		$urlRegex .= "([a-zA-Z0-9.-]*)\.([a-zA-Z]{2,3})"; /// Domain or IP
+		$urlRegex .= "(\:[0-9]{2,5})?"; /// Port
+		$urlRegex .= "(\/([a-zA-Z0-9+\$_-]\.?)+)*\/?"; /// Path
+		$urlRegex .= "(\?[a-zA-Z+&\$_.-][a-zA-Z0-9;:@&%=+\/\$_.-]*)?"; /// GET Query
+		$urlRegex .= "(#[a-zA-Z_.-][a-zA-Z0-9+\$_.-]*)?"; /// Anchor
+		
+		$linkRegex = '/"(.+)"\:('. $urlRegex . ')/ms';
+		
+		$fullUrlRegex = "/^"; /// Start Regex (PHP is stupid)
+		$fullUrlRegex .= "("; /// Catch whole url except garbage
+		$fullUrlRegex .= $urlRegex;
+		$fullUrlRegex .= ").*"; /// End of catching whole url
+		$fullUrlRegex .= "$/"; /// End Regex
+		$fullUrlRegex .= "m"; /// Allow multi line match (and ^ and & )
+		$fullUrlRegex .= "s"; /// Don't stop when finding an \n.
+
+		$links = array();
+		$urls = array();
+		 
+		if(!$this->is_url_possible($text)){
+            /// Do nothing, because the text is too small for urls.
+        }else{
+            $allTheWords = preg_split('/\s|(\<br ?\/\>)/', $text);
+
+            foreach($allTheWords as $word){
+                if($this->is_url_possible($word)){
+                    $matches = array();
+                    $ambigiousResultFullUrl = preg_match($fullUrlRegex, $word, $matches);
+                    if($ambigiousResultFullUrl === TRUE || $ambigiousResultFullUrl === 1){
+                        $embeddedLinks[] = $word;
+                    }
+
+                    $ambigiousResultLink = preg_match($linkRegex, $word, $matches);
+                    if($ambigiousResultLink === TRUE || $ambigiousResultLink === 1){
+                        $description = $matches[1];
+                        $url = $matches[2];
+                        $urls[$word] = '<a href="' . $url . '" rel="nofollow">' . $description . '</a>';
+                    }
+                }
+            }
+
+            
+            //Shorten each found embedded url longer than 60 chars with ellipses.
+            //Otherwise, show them completely.
+			//Added a check to see if embeddedLinks actually contained data
+			if ($embeddedLinks){
+	            foreach( $embeddedLinks as $url ){
+	                $linkLength = strlen( $url );
+	
+	                if($linkLength > 60){
+	                    $urlFirstPart = substr( $url, 0, 25 );
+	                    $urlSecondPart = substr( $url, -25, $linkLength );
+	                    $displayUrl = '<a href="' . $url . '" rel="nofollow">' . $urlFirstPart . '...' . $urlSecondPart . '</a>';
+	                }else{
+	                    $displayUrl = '<a href="' . $url . '" rel="nofollow">' . $url . '</a>';
+	                }
+	                $urls[$url] = $displayUrl;
+	            }
+	
+
+	            //Replace each embedded url with its displayUrl:
+	            foreach($urls as $url => $displayUrl){
+	                $text = str_replace($url, $displayUrl, $text);
+	            }
+			}
+        }
+        return $text;
+	}
+	
+	//Check if word could possibly be a URL
+    function is_url_possible($text){
+        return 10 <= strlen($text);
     }
 
     //Render a message into HTML

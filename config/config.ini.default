@@ -5,6 +5,9 @@ debug_level = false
 ;Discord user token to send DMs
 discord_token = 0000000000000000000000000000000000000000000000000000000
 
+;Message sort order (ascending = like discord with latest message at bottom of page | descending = latest message at top of page)
+message_sort = descending
+
 ;Channels to archive
 channels.1 = 00000000000000000000
 channels.2 = 00000000000000000000
