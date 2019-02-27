@@ -21,8 +21,8 @@
 </check>
 
 <check if="{{ count(@m.embeds) > 0 }}">
-<repeat group="{{ @m.embeds }}" value="{{ @e }}">
                                 <div class="preview wrapper-vertical left" style="border-left: solid 3px #4f545c;">
+<repeat group="{{ @m.embeds }}" value="{{ @e }}">
                                     <div class="wrapper-horizontal center">
 <check if="{{ @e.author }}">
                                         <img class="preview-avatar" src="{{ @e.author.url }}">
@@ -49,8 +49,8 @@
                                         <p class="preview-small preview-gray">{{ @e.footer.text }}</p>
                                     </div>
 </check>
-                                </div>
 </repeat>
+                                </div>
 </check>
                             </div>
                         </div>

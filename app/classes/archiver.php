@@ -262,9 +262,9 @@ class Archiver{
     //Replace mentioned channels with channel names in message content
     function replace_mentioned_channels($content, $mentions){
         //Loop through mentions
-        foreach($mentions as $num => $mention){
+        foreach($mentions[1] as $num => $mention){
             //Replace mentioned role id with role name
-            $content = str_replace($mention[0][$num], '<a href="">#'.$this->f3->get('channels_info')[$mention[1][$num]].'</a>', $content);
+            $content = str_replace($mentions[0][$num], '<a href="">#'.$this->f3->get('channels_info')[$mentions[1][$num]].'</a>', $content);
         }
         
         //Return back content with all replacements
