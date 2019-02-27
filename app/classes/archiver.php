@@ -48,13 +48,29 @@ class Archiver{
             
             //Save channel info
             $this->f3->set('channel_info', $channel_info);
+
+            //Get guild info
+            $guild_info = $this->discord->guild->getGuild(['guild.id' => $channel_info->guild_id]);
+
+            //Get guild channels
+            $guild_channels = $this->discord->guild->getGuildChannels(['guild.id' => $channel_info->guild_id]);
             
-            //Get role info
-            $role_info = $this->discord->guild->getGuildRoles(['guild.id' => $channel_info->guild_id]);
+            //Set channels defaults
+            $channels = [];
+            
+            //Sort channels array
+            foreach($guild_channels as $guild_channel){
+                $channels[$guild_channel->id] = $guild_channel->name;
+            }
+            
+            //Save guild channels info
+            $this->f3->set('channels_info', $channels);
+            
+            //Set role defaults
             $roles = [];
             
-            //Re-sort array
-            foreach($role_info as $role){
+            //Sort role array
+            foreach($guild_info->roles as $role){
                 $roles[$role->id] = $role;
             }
             
@@ -104,8 +120,41 @@ class Archiver{
                 $this->archive_month();
             }
 
-            //Get role color
-            $message['role_color'] = $this->get_user_info($this->f3->get('channel_info')->guild_id, $message['author']['id']);
+            //Get user info for role color
+            $role_color = $this->get_user_info($this->f3->get('channel_info')->guild_id, $message['author']['id']);
+            
+            //Check if role color was returned
+            if($role_color){
+                //Role color returned, set color
+                $message['role_color'] = $role_color['highest_role'];
+            }else{
+                //Invalid role color, set default
+                $message['role_color'] = false;
+            }
+            
+            //Check for mentioned users
+            if(count($message['mentions']) > 0){
+                //Replace mentioned users in content
+                $message['content'] = $this->replace_mentioned_users($message['content'], $message['mentions']);
+            }
+            
+            //Check for mentioned roles
+            if(count($message['mention_roles']) > 0){
+                //Replace mentioned roles in content
+                $message['content'] = $this->replace_mentioned_roles($message['content'], $message['mention_roles']);
+            }
+            
+            //Check for mentioned channels
+            if(preg_match_all("/<#(\d+?)>/", $message['content'], $channels)){
+                //Replace mentioned channels in content
+                $message['content'] = $this->replace_mentioned_channels($message['content'], $channels);
+            }
+            
+            //Check for emojis
+            if(preg_match_all("/<:(\w+?):(\d+?)>/", $message['content'], $emojis)){
+                //Replace emojis in content
+                $message['content'] = $this->replace_emoji($message['content'], $emojis);
+            }
             
             //Render message into HTML
             $this->render_message($message);
@@ -166,8 +215,10 @@ class Archiver{
                 $highest_role = key($role_info);
                 
                 //Cache user info
-                $this->users[$user_id] = $highest_role;
-    
+                $this->users[$user_id]['highest_role'] = $highest_role;
+                $this->users[$user_id]['username'] = $user_info->username;
+                $this->users[$user_id]['desc'] = $user_info->discriminator;
+                
                 //Wait 1 second
                 sleep(1);
                 
@@ -179,6 +230,55 @@ class Archiver{
             }
         }
     }
+
+    //Replace mentioned users with usernames in message content
+    function replace_mentioned_users($content, $mentions){
+        //Loop through mentions
+        foreach($mentions as $mention){
+            //Replace mentioned user id with username
+            $content = str_replace("<@{$mention['id']}>", '<a href="">@'.$mention['username'].'</a>', $content);
+            $content = str_replace("<@!{$mention['id']}>", '<a href="">@'.$mention['username'].'</a>', $content);
+        }
+        
+        //Return back content with all replacements
+        return $content;
+    }
+
+    //Replace mentioned roles with role names in message content
+    function replace_mentioned_roles($content, $mentions){
+        //Loop through mentions
+        foreach($mentions as $mention){
+            //Replace mentioned role id with role name
+            $content = str_replace("<@&{$mention}>", '<a href="">@'.$this->f3->get('role_info')[$mention]->name.'</a>', $content);
+        }
+        
+        //Return back content with all replacements
+        return $content;
+    }
+
+    //Replace mentioned channels with channel names in message content
+    function replace_mentioned_channels($content, $mentions){
+        //Loop through mentions
+        foreach($mentions as $num => $mention){
+            //Replace mentioned role id with role name
+            $content = str_replace($mention[0][$num], '<a href="">#'.$this->f3->get('channels_info')[$mention[1][$num]].'</a>', $content);
+        }
+        
+        //Return back content with all replacements
+        return $content;
+    }
+    
+    //Replace emoji with url in message content
+    function replace_emoji($content, $emojis){
+        //Loop through emojis
+        foreach($emojis[2] as $num => $emoji){
+            //Replace emoji id with URL to emoji
+            $content = str_replace($emojis[0][$num], "<img class='emoji' src='https://cdn.discordapp.com/emojis/{$emojis[2][$num]}.png'>", $content);
+        }
+        
+        //Return back content with all replacements
+        return $content;
+    }    
 
     //Write out stored messages for month to HTML
     function archive_month(){

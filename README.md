@@ -30,3 +30,7 @@ Once all dependencies are installed, you are ready to set up the config. To set 
 ./archiver.sh
 ```
 This will start archiving the given channels listed in the config. Once finished, all HTML files will be located in `archives` and all attachments are saved to `archives\att`.
+
+### Credits
+
+Thanks to [meowsome](https://github.com/meowsome) for the spot on HTML and CSS used in the templates!
