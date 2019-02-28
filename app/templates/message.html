@@ -2,7 +2,7 @@
                     <div id="message-wrapper" class="full-width wrapper-vertical">
                         <div id="message1-1" class="submessage full-width wrapper-horizontal">
                             <div class="w1 left">
-                                <p class="timestamp">{{ date('g:i A',date('U', strtotime(@m.timestamp))) }}</p>
+                                <p class="timestamp tool" data-tip="{{ date('g:i A F j, Y',date('U', strtotime(@m.timestamp))) }}">{{ date('g:i A',date('U', strtotime(@m.timestamp))) }}</p>
                             </div>
                             <div class="w8">
                                 <p>

@@ -311,3 +311,39 @@ a:visited:hover {
     font-size: 12px;
     margin-left: 5px;
 }
+
+.tool {
+  position : relative;
+}
+
+.tool::before, .tool::after {
+  position : absolute;
+  left : 50%;
+  opacity : 0;
+  z-index: -100;
+}
+
+.tool:hover::before, .tool:focus::before, .tool:hover::after, .tool:focus::after {
+  opacity : 1;
+  z-index: 100;
+}
+
+.tool::before {
+  border-style : solid;
+  border-width : 1em .75em 0 .75em;
+  border-color : #3e474f transparent transparent transparent;
+  bottom : 100%;
+  margin-left : -.5em;
+  content : " ";
+}
+
+.tool::after {
+  background : #3e474f;
+  border-radius : .25em;
+  bottom : 180%;
+  color : white;
+  width : 17.5em;
+  padding: 1em;
+  margin-left : -8.75em;
+  content : attr(data-tip);
+}

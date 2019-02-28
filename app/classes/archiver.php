@@ -313,8 +313,14 @@ class Archiver{
         
         //Check message sort order
         if($this->f3->get('message_sort') == 'ascending'){
-            //Reverse array so messages are ascending (default descending)
-            $this->messages = array_reverse($this->messages);
+            //Reverse day order
+            $this->messages[key($this->messages)] = array_reverse($this->messages[key($this->messages)]);
+            
+            //Loop through each day
+            foreach($this->messages[key($this->messages)] as $day => $messages){
+                //Reverse messages so they are ascending (default descending)
+                $this->messages[key($this->messages)][$day] = array_reverse($this->messages[key($this->messages)][$day]);
+            }
         }
         
         //Loop through messages stored (month)
