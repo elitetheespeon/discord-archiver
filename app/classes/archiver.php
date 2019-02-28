@@ -150,6 +150,12 @@ class Archiver{
                 $message['content'] = $this->replace_mentioned_channels($message['content'], $channels);
             }
             
+            //Check for animated emojis
+            if(preg_match_all("/<a:(\w+?):(\d+?)>/", $message['content'], $emojis)){
+                //Replace animated emojis in content
+                $message['content'] = $this->replace_animated_emoji($message['content'], $emojis);
+            }
+
             //Check for emojis
             if(preg_match_all("/<:(\w+?):(\d+?)>/", $message['content'], $emojis)){
                 //Replace emojis in content
@@ -158,6 +164,11 @@ class Archiver{
             
             //Turn any URLs in content into clickable URLs that are shortened down
             $message['content'] = $this->short_url($message['content']);
+            
+            //Render any markdown into HTML equivalents
+            $message['content'] = \Markdown::instance()->convert($message['content']);
+            $message['content'] = str_replace('<p>', '', $message['content']);
+            $message['content'] = str_replace('</p>', '', $message['content']);
             
             //Render message into HTML
             $this->render_message($message);
@@ -271,6 +282,18 @@ class Archiver{
         return $content;
     }
     
+    //Replace animated emoji with url in message content
+    function replace_animated_emoji($content, $emojis){
+        //Loop through emojis
+        foreach($emojis[2] as $num => $emoji){
+            //Replace emoji id with URL to emoji
+            $content = str_replace($emojis[0][$num], "<img class='emoji' src='https://cdn.discordapp.com/emojis/{$emojis[2][$num]}.gif'>", $content);
+        }
+        
+        //Return back content with all replacements
+        return $content;
+    }
+
     //Replace emoji with url in message content
     function replace_emoji($content, $emojis){
         //Loop through emojis
@@ -281,7 +304,7 @@ class Archiver{
         
         //Return back content with all replacements
         return $content;
-    }    
+    }
 
     //Write out stored messages for month to HTML
     function archive_month(){

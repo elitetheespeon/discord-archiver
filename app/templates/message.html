@@ -30,8 +30,8 @@
 </check>
                                     </div>
                                     <p class="preview-gray"><check if="{{ @e.description }}">{{ @e.description }}</check></p>
-                                    <div class="full-width wrapper-horizontal center">
 <check if="{{ count(@e.fields) > 0 }}">
+                                    <div class="full-width wrapper-horizontal center">
 <repeat group="{{ @e.fields }}" value="{{ @f }}">
                                         <div class="w5">
                                             <p>{{ @f.name }}</p>
