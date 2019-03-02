@@ -2,24 +2,22 @@
                     <div id="message-wrapper" class="full-width wrapper-vertical">
                         <div id="message1-1" class="submessage full-width wrapper-horizontal">
                             <div class="w1 left">
-                                <p class="timestamp tool" data-tip="{{ date('g:i A F j, Y',date('U', strtotime(@m.timestamp))) }}">{{ date('g:i A',date('U', strtotime(@m.timestamp))) }}</p>
+                                <p class="timestamp tool" data-tip="{{ date('F j, Y g:i A',date('U', strtotime(@m.timestamp))) }}">{{ date('g:i A',date('U', strtotime(@m.timestamp))) }}</p>
                             </div>
                             <div class="w8">
                                 <p>
                                     <span class="username r{{ @m.role_color }}">{{ @m.author.username }}#{{ @m.author.discriminator }}</span>
 <check if="{{ @m.content }}">
-                                    <span class="content">{{ @m.content | raw }}<check if="{{ @m.edited_timestamp }}"><span class="edited">(edited)</span></check></span>
+                                    <span class="content">{{ trim(@m.content) | raw }}<check if="{{ @m.edited_timestamp }}"><span class="edited">(edited)</span></check></span>
 </check>
                                 </p>
-
 <check if="{{ count(@m.attachments) > 0 }}">
                                 <div class="preview wrapper-vertical left" style="border-left: solid 3px #4f545c;">
 <repeat group="{{ @m.attachments }}" value="{{ @a }}">
-                                    <a href="#" target="_blank"><img class="preview-content" src="att/{{ @a.id }}.{{ @a.filename }}"></a>
+                                    <a href="att/{{ @a.id }}.{{ @a.filename }}" target="_blank"><img class="preview-content" src="att/{{ @a.id }}.{{ @a.filename }}"></a>
 </repeat>
                                 </div>
 </check>
-
 <check if="{{ count(@m.embeds) > 0 }}">
                                 <div class="preview wrapper-vertical left" style="border-left: solid 3px #4f545c;">
 <repeat group="{{ @m.embeds }}" value="{{ @e }}">
@@ -41,7 +39,7 @@
                                     </div>
 </check>
 <check if="{{ @e.thumbnail.proxy_url }}">
-                                    <a href="#" target="_blank"><img class="preview-content" src="{{ @e.thumbnail.proxy_url }}"></a>
+                                    <a href="{{ @e.thumbnail.proxy_url }}" target="_blank"><img class="preview-content" src="{{ @e.thumbnail.proxy_url }}"></a>
 </check>
 <check if="{{ @e.footer.text }}">
                                     <div class="wrapper-horizontal center">
