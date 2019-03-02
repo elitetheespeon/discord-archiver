@@ -6,7 +6,7 @@
                             </div>
                             <div class="w8">
                                 <p>
-                                    <span class="username r{{ @m.role_color }}">{{ @m.author.username }}#{{ @m.author.discriminator }}</span>
+                                    <span class="username tool r{{ @m.role_color }}" data-tip="User ID: {{ @m.author.id }}">{{ @m.author.username }}#{{ @m.author.discriminator }}</span>
 <check if="{{ @m.content }}">
                                     <span class="content">{{ trim(@m.content) | raw }}<check if="{{ @m.edited_timestamp }}"><span class="edited">(edited)</span></check></span>
 </check>
