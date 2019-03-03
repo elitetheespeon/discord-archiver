@@ -167,6 +167,7 @@ class Archiver{
             
             //Convert certain characters that begin Markdown that Discord does not support
             $message['content'] = str_replace('#', '&#35;', $message['content']);
+            $message['content'] = preg_replace('/^(>)( ?[^\n]+\n*+)/', "&gt;$2", $message['content']);
             
             //Render any markdown into HTML equivalents
             $message['content'] = \Markdown::instance()->convert($message['content']);
@@ -181,7 +182,7 @@ class Archiver{
                 //Message has attachments, loop through them
                 foreach ($message['attachments'] as $attachment){
                     //Download attachment
-                    $this->download_attachment($attachment);
+                    //$this->download_attachment($attachment);
                 }
             }
             
