@@ -182,7 +182,7 @@ class Archiver{
                 //Message has attachments, loop through them
                 foreach ($message['attachments'] as $attachment){
                     //Download attachment
-                    //$this->download_attachment($attachment);
+                    $this->download_attachment($attachment);
                 }
             }
             
